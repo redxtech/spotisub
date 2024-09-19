@@ -1,6 +1,4 @@
 FROM python:3.10-slim-bullseye
-ARG UID=1000
-ARG GID=1000
 ARG TZ=Europe/Rome
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -18,10 +16,7 @@ ENV LANG it_IT.UTF-8
 ENV LANGUAGE it_IT:it  
 ENV LC_ALL it_IT.UTF-8
 
-RUN groupadd --gid $GID data
-RUN useradd --no-log-init --create-home --shell /bin/bash --uid $UID --gid $GID data
-USER data
-ENV HOME=/home/data
+ENV HOME=/root
 WORKDIR $HOME
 RUN mkdir $HOME/.config && chmod -R 777 $HOME
 ENV PATH="$HOME/.local/bin:$PATH"
@@ -33,8 +28,7 @@ COPY requirements.txt .
 
 RUN pip3 install -r requirements.txt
 
-USER root
-ENV HOME=/home/data
+ENV HOME=/root
 COPY main.py .
 COPY init.py .
 COPY spotisub spotisub/
@@ -44,8 +38,5 @@ COPY uwsgi.ini .
 RUN chmod +x entrypoint.sh
 RUN chmod +x first_run.sh
 
-RUN chown -R data:data .
 
-
-USER data
 CMD ["./entrypoint.sh"]
