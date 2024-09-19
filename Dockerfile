@@ -18,10 +18,10 @@ ENV LANG it_IT.UTF-8
 ENV LANGUAGE it_IT:it  
 ENV LC_ALL it_IT.UTF-8
 
-RUN groupadd --gid $GID user
-RUN useradd --no-log-init --create-home --shell /bin/bash --uid $UID --gid $GID user
-USER user
-ENV HOME=/home/user
+RUN groupadd --gid $GID data
+RUN useradd --no-log-init --create-home --shell /bin/bash --uid $UID --gid $GID data
+USER data
+ENV HOME=/home/data
 WORKDIR $HOME
 RUN mkdir $HOME/.config && chmod -R 777 $HOME
 ENV PATH="$HOME/.local/bin:$PATH"
@@ -34,7 +34,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 USER root
-ENV HOME=/home/user
+ENV HOME=/home/data
 COPY main.py .
 COPY init.py .
 COPY spotisub spotisub/
@@ -44,8 +44,8 @@ COPY uwsgi.ini .
 RUN chmod +x entrypoint.sh
 RUN chmod +x first_run.sh
 
-RUN chown -R user:user .
+RUN chown -R data:data .
 
 
-USER user
+USER data
 CMD ["./entrypoint.sh"]
